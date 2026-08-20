@@ -1,0 +1,14 @@
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+backend.hcl
+terraform.tfvars
+*.auto.tfvars
+
+# Secrets — belt and suspenders alongside the gitleaks gate
+.env
+.env.*
