@@ -1,0 +1,5 @@
+# Copy to terraform.tfvars (gitignored) and fill in. Never commit real values.
+# aiven_api_token is better set via env var: export TF_VAR_aiven_api_token=...
+
+aiven_project = "your-aiven-project"
+aiven_plan    = "hobbyist" # verify with: avn service plan-list --project <aiven_project> mysql
