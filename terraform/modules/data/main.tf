@@ -1,30 +1,46 @@
 # =============================================================================
-# modules/data — RDS MySQL + Secrets Manager        (GROUP-OWNED: you build this)
+# modules/data — Aiven MySQL + Secrets Manager (LocalStack)   (Phase 2 / Member 2)
 #
-# Create a managed MySQL instance and publish its credentials to Secrets Manager
-# using the shared envelope. NO plaintext secret in git, in the image, or in any
-# output that gets logged.
+# Provisions a real Aiven for MySQL service and publishes its connection
+# details to a LocalStack-emulated Secrets Manager secret using the envelope
+# the rest of the stack expects: { engine, username, password, host, port,
+# dbname }. No plaintext secret in git, state is the only place it lands
+# (see ASSIGNMENT.md C3 — treat the state file as a credential store).
 #
-# Expected inputs  (put these in variables.tf):
-#   db_name (default "capacity_lab"), db_username (default "app"),
-#   instance_class (default "db.t3.micro"), allocated_storage (default 20),
-#   engine_version (default "8.0"), secret_name (default "regional-health/db")
+# DEVIATION: ASSIGNMENT.md specifies RDS MySQL emulated by LocalStack for C2.
+# This module uses a real Aiven MySQL service instead; only Secrets Manager
+# stays on LocalStack. See FIDELITY.md for the documented trade-off.
 #
-# Expected outputs (put these in outputs.tf — the root module depends on them):
-#   db_endpoint, db_port, secret_arn, secret_name
+# aiven_database / aiven_service_user were removed in provider v4 — there is
+# no Terraform-managed "app" database or non-admin user. The migration script
+# (api/migrations) issues `CREATE DATABASE IF NOT EXISTS <db_name>` and runs
+# as the service's default admin user.
 # =============================================================================
 
-# TODO: generate the DB master password.
-#   hint: resource "random_password" "db" { length = 24, special = false }
+resource "aiven_mysql" "db" {
+  project                 = var.aiven_project
+  cloud_name              = var.aiven_cloud_name
+  plan                    = var.aiven_plan
+  service_name            = var.service_name
+  termination_protection  = var.termination_protection
 
-# TODO: resource "aws_db_instance" "mysql" — engine "mysql", *_version /
-#   instance_class / allocated_storage from vars, storage_type "gp3",
-#   db_name / username from vars, password = random_password.db.result,
-#   skip_final_snapshot = true. Decide publicly_accessible + storage_encrypted —
-#   your `trivy config` gate WILL have opinions; note in FIDELITY.md what
-#   LocalStack actually enforces vs. just echoes back.
+  mysql_user_config {
+    mysql_version = var.mysql_version
+  }
+}
 
-# TODO: resource "aws_secretsmanager_secret" "db" { name = var.secret_name }
-# TODO: resource "aws_secretsmanager_secret_version" "db" — secret_string is the
-#   JSON envelope, keys EXACTLY: engine, username, password, host, port, dbname
-#   (host/port come from the aws_db_instance address/port attributes).
+resource "aws_secretsmanager_secret" "db" {
+  name = var.secret_name
+}
+
+resource "aws_secretsmanager_secret_version" "db" {
+  secret_id = aws_secretsmanager_secret.db.id
+  secret_string = jsonencode({
+    engine   = "mysql"
+    username = aiven_mysql.db.service_username
+    password = aiven_mysql.db.service_password
+    host     = aiven_mysql.db.service_host
+    port     = aiven_mysql.db.service_port
+    dbname   = var.db_name
+  })
+}
