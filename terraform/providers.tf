@@ -7,3 +7,10 @@
 provider "aws" {
   region = var.aws_region
 }
+
+# aiven is a real cloud API with no LocalStack emulation — tflocal does not
+# and cannot wrap it. modules/data provisions a real Aiven MySQL service
+# regardless of which wrapper this root is applied with (see FIDELITY.md).
+provider "aiven" {
+  api_token = var.aiven_api_token
+}

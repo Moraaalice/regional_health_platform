@@ -9,18 +9,18 @@ variable "app_ami_id" {
   type        = string
 }
 
-variable "db_secret_arn" {
-  description = "Secrets Manager ARN holding the Aiven MySQL credentials envelope. Plain variable for now so this root can plan on its own; once modules/data (Aiven + Secrets Manager) lands, wire this from its output instead."
+variable "aiven_api_token" {
+  description = "Aiven personal/application token. Set via TF_VAR_aiven_api_token or AIVEN_TOKEN env var — never commit it."
+  type        = string
+  sensitive   = true
+}
+
+variable "aiven_project" {
+  description = "Aiven project name modules/data's MySQL service is created under."
   type        = string
 }
 
-variable "db_endpoint" {
-  description = "Aiven MySQL host. Same story as db_secret_arn — comes from modules/data once it exists."
+variable "aiven_plan" {
+  description = "Aiven for MySQL plan slug. Look it up with: avn service plan-list --project <aiven_project> mysql"
   type        = string
-}
-
-variable "db_port" {
-  description = "Aiven MySQL port."
-  type        = number
-  default     = 3306
 }
