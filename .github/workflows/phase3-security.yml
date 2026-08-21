@@ -58,6 +58,7 @@ jobs:
           output: trivy-config.txt
 
       - name: Upload Trivy config report
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: trivy-config-report
@@ -86,6 +87,7 @@ jobs:
           ~/.local/bin/zizmor --format plain .github/workflows | tee zizmor.txt
 
       - name: Upload zizmor report
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: zizmor-report
@@ -176,17 +178,20 @@ jobs:
           output: trivy-image.txt
 
       - name: Save image digest
+        if: always()
         run: |
           docker image inspect "${IMAGE_TAG}" --format '{{index .RepoDigests 0}}' > image-digest.txt || \
           docker image inspect "${IMAGE_TAG}" --format '{{.Id}}' > image-digest.txt
 
       - name: Upload image digest
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: image-digest
           path: image-digest.txt
 
       - name: Upload Trivy image report
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: trivy-image-report
