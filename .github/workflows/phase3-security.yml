@@ -99,8 +99,8 @@ jobs:
       AWS_SECRET_ACCESS_KEY: test
       AWS_DEFAULT_REGION: us-east-1
       TF_VAR_aiven_api_token: ${{ secrets.AIVEN_API_TOKEN }}
-      TF_VAR_aiven_project: ${{ vars.AIVENPROJECT }}
-      TF_VAR_aiven_plan: ${{ vars.AIVENPLAN }}
+      TF_VAR_aiven_project: ${{ vars.AIVEN_PROJECT }}
+      TF_VAR_aiven_plan: ${{ vars.AIVEN_PLAN }}
       LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
     steps:
       - name: Harden runner
