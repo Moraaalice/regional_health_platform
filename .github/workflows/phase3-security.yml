@@ -103,7 +103,6 @@ jobs:
       TF_VAR_aiven_api_token: ${{ secrets.AIVEN_API_TOKEN }}
       TF_VAR_aiven_project: ${{ vars.AIVENPROJECT }}
       TF_VAR_aiven_plan: ${{ vars.AIVENPLAN }}
-      TF_VAR_service_name: regional-health-mysql-${{ github.run_id }}
       LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
     steps:
       - name: Harden runner
@@ -150,6 +149,16 @@ jobs:
           tflocal init
           tflocal plan
           tflocal apply -auto-approve
+
+      # Aiven's free tier is one MySQL service per account, and this job's
+      # state is local-only (never persisted between runs) — so every run
+      # must destroy what it created, or the next run collides with a real
+      # service the previous run left behind.
+      - name: Terraform destroy in LocalStack dev root
+        if: always()
+        run: |
+          cd terraform/envs/dev
+          tflocal destroy -auto-approve
 
   docker-build-scan:
     name: docker-build-scan
