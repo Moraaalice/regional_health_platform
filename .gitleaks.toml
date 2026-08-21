@@ -1,0 +1,13 @@
+title = "Regional Health platform"
+
+[extend]
+useDefault = true
+
+[allowlist]
+  description = "Allow local dev and example files"
+  paths = [
+    ".*\\.example$",
+    ".*terraform\\.tfvars\\.example$",
+    "node_modules/.*",
+    ".*package-lock\\.json$"
+  ]

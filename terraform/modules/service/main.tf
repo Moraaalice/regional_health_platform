@@ -13,6 +13,10 @@ data "aws_subnets" "default" {
   }
 }
 
+# Egress must reach the real Aiven MySQL host and OS package mirrors — a
+# public internet endpoint whose IP isn't known at plan time, so there's no
+# fixed CIDR to scope the egress rule below to.
+#trivy:ignore:AWS-0104
 resource "aws_security_group" "app" {
   name        = "regional-health-app"
   description = "nginx + app ports for the Regional Health EC2 instance"
@@ -55,6 +59,11 @@ resource "aws_instance" "app" {
 
   root_block_device {
     volume_size = 8
+    encrypted   = true
+  }
+
+  metadata_options {
+    http_tokens = "required"
   }
 
   user_data = templatefile("${path.module}/user_data.sh.tpl", {
@@ -73,10 +82,11 @@ resource "aws_instance" "app" {
 # instance carries the real traffic — LocalStack's ELBv2 health checking
 # isn't documented/reliable enough to depend on for C4.
 resource "aws_lb" "app" {
-  name               = "regional-health"
-  internal           = false
-  load_balancer_type = "application"
-  subnets            = data.aws_subnets.default.ids
+  name                       = "regional-health"
+  internal                   = true
+  load_balancer_type         = "application"
+  subnets                    = data.aws_subnets.default.ids
+  drop_invalid_header_fields = true
 
   lifecycle {
     ignore_changes = [subnets]
@@ -105,6 +115,10 @@ resource "aws_lb_target_group_attachment" "app" {
   port             = var.app_port
 }
 
+# nginx on the instance carries the real traffic and makes the real TLS
+# decision (see ASSIGNMENT.md); this ALB is declarative IaC only, and
+# LocalStack has no ACM to issue it a certificate anyway.
+#trivy:ignore:AWS-0054
 resource "aws_lb_listener" "app" {
   load_balancer_arn = aws_lb.app.arn
   port              = 80

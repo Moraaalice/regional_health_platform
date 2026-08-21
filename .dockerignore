@@ -1,0 +1,11 @@
+node_modules
+npm-debug.log
+a .git
+.gitignore
+Dockerfile
+.dockerignore
+README.md
+ASSIGNMENT.md
+FIDELITY.md
+CONTRIBUTIONS.md
+.evidence

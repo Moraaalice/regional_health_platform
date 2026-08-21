@@ -37,9 +37,9 @@ variable "service_name" {
 }
 
 variable "mysql_version" {
-  description = "MySQL major version passed to mysql_user_config.mysql_version."
+  description = "MySQL major version passed to mysql_user_config.mysql_version. Aiven's service_types API is the source of truth for what's currently offered — check it before changing this, since Aiven retires old major versions (8.0 is EOL; 8.4 is what's offered as of this writing)."
   type        = string
-  default     = "8"
+  default     = "8.4"
 }
 
 variable "db_name" {
