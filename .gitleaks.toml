@@ -1,16 +1,13 @@
 title = "Regional Health platform"
 
+[extend]
+useDefault = true
+
 [allowlist]
   description = "Allow local dev and example files"
   paths = [
-    "**/*.example",
-    "**/terraform.tfvars.example",
-    "**/node_modules/**",
-    "**/package-lock.json"
+    ".*\\.example$",
+    ".*terraform\\.tfvars\\.example$",
+    "node_modules/.*",
+    ".*package-lock\\.json$"
   ]
-
-[[rules]]
-  description = "Generic credential-like strings"
-  id = "generic-credential"
-  regex = '''(?:AKIA|ASIA)[A-Z0-9]{16}|(?:aws[_-]?secret[_-]?access[_-]?key|password|passwd|secret|token)[\s:=\"']+[A-Za-z0-9/+=._-]{8,}'''
-  tags = ["key", "secret"]

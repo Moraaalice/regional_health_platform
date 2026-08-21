@@ -18,11 +18,11 @@
 # =============================================================================
 
 resource "aiven_mysql" "db" {
-  project                 = var.aiven_project
-  cloud_name              = var.aiven_cloud_name
-  plan                    = var.aiven_plan
-  service_name            = var.service_name
-  termination_protection  = var.termination_protection
+  project                = var.aiven_project
+  cloud_name             = var.aiven_cloud_name
+  plan                   = var.aiven_plan
+  service_name           = var.service_name
+  termination_protection = var.termination_protection
 
   mysql_user_config {
     mysql_version = var.mysql_version
