@@ -103,6 +103,7 @@ jobs:
       TF_VAR_aiven_api_token: ${{ secrets.AIVEN_API_TOKEN }}
       TF_VAR_aiven_project: ${{ vars.AIVENPROJECT }}
       TF_VAR_aiven_plan: ${{ vars.AIVENPLAN }}
+      TF_VAR_service_name: regional-health-mysql-${{ github.run_id }}
       LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
     steps:
       - name: Harden runner
