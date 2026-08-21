@@ -1,5 +1,7 @@
 # Copy to terraform.tfvars (gitignored) and fill in. Never commit real values.
 # aiven_api_token is better set via env var: export TF_VAR_aiven_api_token=...
+# The project must be one the token is a member of; otherwise Aiven returns 403
+# "ProjectServicePlanSpecsGet: Not a project member".
 
-aiven_project = "your-aiven-project"
-aiven_plan    = "hobbyist" # verify with: avn service plan-list --project <aiven_project> mysql
+aiven_project = "girmaayemebet-6355"
+aiven_plan    = "hobbyist" # verified with: avn service plan-list --project girmaayemebet-6355 mysql
