@@ -1,0 +1,17 @@
+scan:
+  scanners:
+    - vuln
+    - config
+    - secret
+
+format: table
+severity:
+  - HIGH
+  - CRITICAL
+ignore-unfixed: false
+exit-code: 1
+
+misconfiguration:
+  scanners:
+    - terraform
+    - dockerfile
