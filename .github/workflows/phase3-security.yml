@@ -99,8 +99,8 @@ jobs:
       AWS_SECRET_ACCESS_KEY: test
       AWS_DEFAULT_REGION: us-east-1
       TF_VAR_aiven_api_token: ${{ secrets.AIVEN_API_TOKEN }}
-      TF_VAR_aiven_project: ${{ vars.AIVEN_PROJECT }}
-      TF_VAR_aiven_plan: ${{ vars.AIVEN_PLAN }}
+      TF_VAR_aiven_project: ${{ vars.AIVENPROJECT }}
+      TF_VAR_aiven_plan: ${{ vars.AIVENPLAN }}
       LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
     steps:
       - name: Harden runner
@@ -134,6 +134,19 @@ jobs:
 
       - name: Install tflocal
         run: python -m pip install terraform-local
+
+      - name: Validate Aiven project access
+        env:
+          AIVEN_TOKEN: ${{ secrets.AIVEN_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          python -m pip install --user aiven-client
+          export PATH="$HOME/.local/bin:$PATH"
+
+          echo "Checking Aiven membership for project: ${TF_VAR_aiven_project}"
+          avn account info
+          avn project list | grep -F "${TF_VAR_aiven_project}"
+          avn service plan-list --project "${TF_VAR_aiven_project}" mysql >/dev/null
 
       - name: Terraform fmt and validate
         run: |
